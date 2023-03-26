@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     EditText inputText;
     String s;
     AlertDialog.Builder builder;
+    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +37,14 @@ public class MainActivity extends AppCompatActivity {
 
         imageButton = (ImageButton) findViewById(R.id.imageButton);
         listView = (ListView) findViewById(R.id.listView);
+        dbHelper = new DBHelper(this);
         arrayList = new ArrayList<>();
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayList);
-        inputText = findViewById(R.id.inputText);
         builder = new AlertDialog.Builder(this);
+        listView.setAdapter(arrayAdapter);
+        inputText = findViewById(R.id.inputText);
+
+
+        showDetails();
 
 
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -49,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
                     s="";
                 }else {
                     s = inputText.getText().toString();
-                    arrayList.add(s);
-                    listView.setAdapter(arrayAdapter);
+//                    arrayList.add(s);
+//                    listView.setAdapter(arrayAdapter);
+                    dbHelper.addData(s);
+                    showDetails();
                     InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                     inputText.setText("");
@@ -66,8 +73,11 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        arrayList.remove(pos);
-                        listView.setAdapter(arrayAdapter);
+
+//                        listView.setAdapter(arrayAdapter);
+//                        String t = arrayList.get(pos);
+//                        dbHelper.deleteData(pos+1);
+                        showDetails();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -99,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 arrayList.clear();
-                listView.setAdapter(arrayAdapter);
+                showDetails();
+//                listView.setAdapter(arrayAdapter);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -112,4 +123,11 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
+    public void showDetails(){
+//        arrayList = dbHelper.fetchData();
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,dbHelper.fetchData());
+        listView.setAdapter(arrayAdapter);
+    }
+   
 }
